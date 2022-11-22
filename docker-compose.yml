@@ -1,0 +1,58 @@
+version : '3'
+services:
+
+  #app1
+  app1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: jasonafs/laravel
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "9000:9000"
+    working_dir: /var/www/html
+    volumes:
+      - ./app1/:/var/www/html
+    networks:
+      - mynet
+  #Nginx
+  nginx:
+    image: nginx:alpine
+    container_name: nginxLaravel
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "8080:80"
+    volumes:
+      - ./app1/:/var/www/html
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+      
+    networks:
+      - mynet
+  #Mysql
+  db:
+    image: mysql:5.7
+    container_name: dbLaravel
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: laraveldb
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: laravelpassworddb
+      MYSQL_ROOT_PASSWORD: rootpasswordmysql
+    volumes:
+      - mysqldata:/var/lib/mysql/
+    networks:
+      - mynet
+
+#networks
+networks:
+  mynet:
+    driver: bridge
+#volume
+volumes:
+  mysqldata:
+    driver: local
