@@ -66,6 +66,22 @@ services:
     networks:
       - mynet
 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: example-app-phpmyadmin
+    restart: unless-stopped
+    tty: true
+    depends_on:
+      - db
+    ports:
+      - 8088:80
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: laravelpassworddb
+      UPLOAD_LIMIT: 300M
+    networks:
+      - mynet
+
 #networks
 networks:
   mynet:
