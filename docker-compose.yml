@@ -1,21 +1,25 @@
 version : '3'
 services:
-
   #app1
-  app1:
+  php1:
     build:
       context: .
       dockerfile: Dockerfile
-    image: jasonafs/laravel
-    restart: unless-stopped
-    tty: true
-    ports:
-      - "9000:9000"
-    working_dir: /var/www/html
     volumes:
-      - ./app1/:/var/www/html
+      - ./app1:/var/www/html
     networks:
       - mynet
+
+
+  php2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./app2:/var/www/html
+    networks:
+      - mynet
+      
   #Nginx
   nginx:
     image: nginx:alpine
@@ -25,8 +29,22 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - ./app1/:/var/www/html
-      - ./nginx/conf.d/:/etc/nginx/conf.d/
+      - ./app1:/var/www/html
+      - ./app1/nginx/conf.d/:/etc/nginx/conf.d/
+      
+    networks:
+      - mynet
+  
+  nginx2:
+    image: nginx:alpine
+    container_name: nginxLaravel2
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "8081:80"
+    volumes:
+      - ./app2:/var/www/html
+      - ./app2/nginx/conf.d/:/etc/nginx/conf.d/
       
     networks:
       - mynet
